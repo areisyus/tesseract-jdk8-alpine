@@ -63,7 +63,7 @@ COPY --from=builder /home/dev/packages/home/x86_64/tesseract-git-* /tesseract/
 
 RUN set -x \
     && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
-    && apk add icu-libs icu-dev 
+    && apk add icu-libs icu-dev \
     && apk add --update --allow-untrusted /tesseract/tesseract-git-* \
     && rm -rf /tesseract \
     && echo "done"
