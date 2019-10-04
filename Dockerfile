@@ -47,9 +47,23 @@ RUN set -x \
 
 FROM openjdk:8-jdk-alpine
 
+ENV LC_ALL C
+
+# add required tessdata
+RUN mkdir -p /usr/share/tessdata
+ADD https://github.com/tesseract-ocr/tessdata/raw/master/eng.traineddata /usr/share/tessdata/eng.traineddata
+ADD https://github.com/tesseract-ocr/tessdata/raw/master/deu.traineddata /usr/share/tessdata/deu.traineddata
+
 RUN mkdir -p /tesseract
 
 # Provide the packages in /tesseract folder
 # Install using:
 # apk add --allow-untrusted /tesseract/teseract-git-*
 COPY --from=builder /home/dev/packages/home/x86_64/tesseract-git-* /tesseract/
+
+RUN set -x \
+    && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
+    && apk add icu-libs icu-dev 
+    && apk add --update --allow-untrusted /tesseract/tesseract-git-* \
+    && rm -rf /tesseract \
+    && echo "done"
