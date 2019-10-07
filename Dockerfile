@@ -14,7 +14,15 @@ RUN set -x \
     && echo "dev ALL=NOPASSWD: ALL" >> /etc/sudoers \
     && addgroup dev abuild \
     && mkdir -p /var/cache/distfiles \
-    && chmod a+w /var/cache/distfiles
+    && chmod a+w /var/cache/distfiles 
+
+# Update with full and community repositories
+RUN apk add --update \
+--repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
+--repository http://dl-cdn.alpinelinux.org/alpine/edge/community
+
+RUN apk add -U --repository http://dl-3.alpinelinux.org/alpine/edge/testing \
+    texlive-full icu-libs icu-dev
 
 RUN set -x \
     # Add community repository
