@@ -61,9 +61,16 @@ RUN mkdir -p /tesseract
 # apk add --allow-untrusted /tesseract/teseract-git-*
 COPY --from=builder /home/dev/packages/home/x86_64/tesseract-git-* /tesseract/
 
+# Update with full and community repositories
+RUN apk add --update \
+--repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
+--repository http://dl-cdn.alpinelinux.org/alpine/edge/community
+
+# Add local repository for tesseract and install dependencies
 RUN set -x \
     && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
     && apk add icu-libs icu-dev \
     && apk add --update --allow-untrusted /tesseract/tesseract-git-* \
     && rm -rf /tesseract \
+    && rm /var/cache/apk/* \
     && echo "done"
