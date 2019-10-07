@@ -6,7 +6,7 @@ RUN set -x \
     # Install SDK
     && apk update \
     && apk upgrade --no-cache apk-tools \
-    && apk add --no-cache alpine-sdk \
+    && apk add --no-cache alpine-sdk icu-libs icu-dev \
     # Add user to build with
     && adduser -D -g "User" dev \
     && echo dev:dev | chpasswd \
@@ -61,11 +61,16 @@ RUN mkdir -p /tesseract
 # apk add --allow-untrusted /tesseract/teseract-git-*
 COPY --from=builder /home/dev/packages/home/x86_64/tesseract-git-* /tesseract/
 
+# Update dependencies
+RUN apk add --no-cache \
+    --repository http://dl-cdn.alpinelinux.org/alpine/edge/main \
+    --repository  http://dl-cdn.alpinelinux.org/alpine/edge/community \
+    icu-libs icu-dev \
+
 # Add local repository for tesseract and install dependencies
 RUN set -x \
-    && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \
-    && apk add icu-libs icu-dev \
-    && apk add --allow-untrusted --fix  /tesseract/tesseract-git-* \
+    && echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories \    
+    && apk add --allow-untrusted /tesseract/tesseract-git-* \
     && rm -rf /tesseract \
     && rm /var/cache/apk/* \
     && echo "done"
